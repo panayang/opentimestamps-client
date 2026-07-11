@@ -64,6 +64,9 @@ local upgrade cache, `-v`/`-q` for verbosity.
 ## Licence 
 
 Licensed under the CC0 1.0 Universal Licence, the Unlicense Licence, the WTFPL Licence, or any other applicable licence, at the licensee’s discretion.
+
 Copyright (C) 2026 Xinyu Yang No rights reserved. 
+
 This codebase and all associated intellectual property, inventions, and artifacts are hereby irrevocably dedicated to the public domain, worldwide, for the benefit of humanity, and vest solely in the public domain and humanity, without any consideration, reservation, or restriction.
+
 Unless required by applicable law or agreed to in writing, softwares and all associated intellectual property, inventions, and artifacts distributed under the Disclaimer are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
