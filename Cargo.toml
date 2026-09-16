@@ -1,10 +1,10 @@
 [package]
-name = "ots-client"
+name = "opentimestamps-client"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.89.0"
 authors = [
-    "Xinyu Yang <Xinyu.Yang@apich.org>",
+    "Xinyu Yang <Pana.Yang@hotmail.com>",
     "Opentimestamps-Client Contributors",
 ]
 license = "MIT OR Apache-2.0"

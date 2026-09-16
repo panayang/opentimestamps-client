@@ -1,4 +1,7 @@
-# ots-client (Rust)
+# opentimestamps-client (Rust)
+
+> [!NOTE]
+> This project is a personal project of panayang, and does not follow the code quality standards, security standards, Code of Conduct, or Ethics standards of Apich Organization, and is not funded by, developed by, participated in by, or sponsored by it. For any questions, please contact <Pana.Yang@hotmail.com>.
 
 A modern, fast, dependency-light reimplementation of the [OpenTimestamps](https://opentimestamps.org)
 client, ported from the reference Python `opentimestamps-client` /

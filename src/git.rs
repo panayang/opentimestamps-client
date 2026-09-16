@@ -455,10 +455,10 @@ pub async fn run_gpg_wrapper(
                 .spawn()
                 .with_context(|| format!("failed to spawn GPG binary '{gpg_prog}'"))?;
 
-            if !git_commit.is_empty() {
-                if let Some(mut stdin) = child.stdin.take() {
-                    let _ = stdin.write_all(&git_commit);
-                }
+            if !git_commit.is_empty()
+                && let Some(mut stdin) = child.stdin.take()
+            {
+                let _ = stdin.write_all(&git_commit);
             }
 
             let status = child.wait()?;
