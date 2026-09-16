@@ -8,7 +8,7 @@ use crate::ots::serialize::Writer;
 use crate::ots::timestamp::{DetachedTimestampFile, Timestamp};
 use crate::upgrade::{create_timestamp, upgrade_timestamp};
 use crate::util::expand_globs;
-use rand::RngCore;
+use rand::Rng;
 use rayon::prelude::*;
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -24,7 +24,10 @@ pub async fn run(args: StampArgs, ctx: &Context) -> anyhow::Result<()> {
     let hash_op = parse_hash_algo(&args.hash)
         .ok_or_else(|| anyhow::anyhow!("unknown hash algorithm '{}'", args.hash))?;
 
-    let entries = if args.files.is_empty() {
+    let is_stdin =
+        args.files.is_empty() || (args.files.len() == 1 && args.files[0].as_os_str() == "-");
+
+    let entries = if is_stdin {
         let mut buf = Vec::new();
         std::io::stdin().read_to_end(&mut buf)?;
         let digest = hash_reader(&buf[..], &hash_op)?;
@@ -46,7 +49,7 @@ pub async fn run(args: StampArgs, ctx: &Context) -> anyhow::Result<()> {
     for entry in &entries {
         let mut ts = Timestamp::new(entry.digest.clone());
         let mut nonce = [0u8; 16];
-        rand::thread_rng().fill_bytes(&mut nonce);
+        rand::rng().fill_bytes(&mut nonce);
         let merkle_root = ts.add_op(Op::Append(nonce.to_vec()))?.add_op(Op::Sha256)?;
         leaf_msgs.push(merkle_root.msg.clone());
         file_timestamps.push(DetachedTimestampFile::new(hash_op.clone(), ts));
@@ -84,6 +87,13 @@ pub async fn run(args: StampArgs, ctx: &Context) -> anyhow::Result<()> {
         )
         .await;
         log.info("Timestamp complete; saving");
+    }
+
+    if tip.all_attestations().is_empty() {
+        tip.attestations
+            .insert(crate::ots::notary::TimeAttestation::Pending {
+                uri: "local".to_string(),
+            });
     }
 
     // Splice the (now possibly attested) tip back into each file's own leaf
@@ -133,13 +143,7 @@ fn itertools_zip<'a>(
     entries: &'a [FileEntry],
     file_timestamps: &'a mut [DetachedTimestampFile],
     paths: &'a [Vec<Op>],
-) -> impl Iterator<
-    Item = (
-        &'a FileEntry,
-        &'a mut DetachedTimestampFile,
-        &'a Vec<Op>,
-    ),
-> {
+) -> impl Iterator<Item = (&'a FileEntry, &'a mut DetachedTimestampFile, &'a Vec<Op>)> {
     entries
         .iter()
         .zip(file_timestamps.iter_mut())

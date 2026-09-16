@@ -47,10 +47,11 @@ pub async fn create_timestamp(
     on_log: impl Fn(&str),
 ) -> anyhow::Result<()> {
     let n = calendar_urls.len();
-    if m == 0 || m > n {
-        anyhow::bail!(
-            "m ({m}) cannot be greater than available calendar(s) ({n}), nor <= 0"
-        );
+    if m > n {
+        anyhow::bail!("m ({m}) cannot be greater than available calendar(s) ({n})");
+    }
+    if m == 0 {
+        return Ok(());
     }
 
     let deadline = Instant::now() + timeout;
@@ -181,7 +182,9 @@ pub async fn upgrade_timestamp(
         for (commitment, url) in targets {
             let cal = RemoteCalendar::new(url.clone(), user_agent());
             futs.push(async move {
-                let r = cal.get_timestamp(&commitment, Some(Duration::from_secs(15))).await;
+                let r = cal
+                    .get_timestamp(&commitment, Some(Duration::from_secs(15)))
+                    .await;
                 (commitment, url, r)
             });
         }

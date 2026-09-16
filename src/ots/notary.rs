@@ -112,7 +112,9 @@ impl std::fmt::Display for TimeAttestation {
             TimeAttestation::Bitcoin { height } => write!(f, "Bitcoin block {height}"),
             TimeAttestation::Litecoin { height } => write!(f, "Litecoin block {height}"),
             TimeAttestation::Ethereum { height } => write!(f, "Ethereum block {height}"),
-            TimeAttestation::Unknown { tag, .. } => write!(f, "unknown attestation {}", hex::encode(tag)),
+            TimeAttestation::Unknown { tag, .. } => {
+                write!(f, "unknown attestation {}", hex::encode(tag))
+            }
         }
     }
 }
@@ -134,9 +136,16 @@ impl Ord for TimeAttestation {
             (Bitcoin { height: a }, Bitcoin { height: b }) => a.cmp(b),
             (Litecoin { height: a }, Litecoin { height: b }) => a.cmp(b),
             (Ethereum { height: a }, Ethereum { height: b }) => a.cmp(b),
-            (Unknown { tag: ta, payload: pa }, Unknown { tag: tb, payload: pb }) => {
-                ta.cmp(tb).then_with(|| pa.cmp(pb))
-            }
+            (
+                Unknown {
+                    tag: ta,
+                    payload: pa,
+                },
+                Unknown {
+                    tag: tb,
+                    payload: pb,
+                },
+            ) => ta.cmp(tb).then_with(|| pa.cmp(pb)),
             _ => self.tag().cmp(&other.tag()),
         }
     }

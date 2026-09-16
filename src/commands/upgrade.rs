@@ -30,7 +30,10 @@ pub async fn run(args: UpgradeArgs, ctx: &Context) -> anyhow::Result<()> {
         if changed && !args.dry_run {
             let backup = backup_path(path);
             if backup.exists() {
-                anyhow::bail!("could not back up timestamp: {} already exists", backup.display());
+                anyhow::bail!(
+                    "could not back up timestamp: {} already exists",
+                    backup.display()
+                );
             }
             std::fs::rename(path, &backup)?;
 
@@ -40,7 +43,10 @@ pub async fn run(args: UpgradeArgs, ctx: &Context) -> anyhow::Result<()> {
         }
 
         if is_timestamp_complete(&detached.timestamp) {
-            log.info(&format!("Success! Timestamp for {} is complete", path.display()));
+            log.info(&format!(
+                "Success! Timestamp for {} is complete",
+                path.display()
+            ));
         } else {
             anyhow::bail!("Failed! Timestamp for {} is not complete", path.display());
         }

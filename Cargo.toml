@@ -2,31 +2,68 @@
 name = "ots-client"
 version = "0.1.0"
 edition = "2024"
-description = "Modern, dependency-light Rust client for OpenTimestamps"
-license = "LGPL-3.0-or-later"
+rust-version = "1.89.0"
+authors = [
+    "Xinyu Yang <Xinyu.Yang@apich.org>",
+    "Opentimestamps-Client Contributors",
+]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/panayang/opentimestamps-client"
+homepage = "https://github.com/panayang/opentimestamps-client"
+documentation = "https://docs.rs/opentimestamps-client"
+readme = "README.md"
+description = "Modern, dependency-light Rust client and library for OpenTimestamps proof creation and verification"
+categories = [
+    "command-line-utilities",
+    "cryptography",
+    "cryptography::cryptocurrencies",
+    "development-tools",
+]
+keywords = [
+    "opentimestamps",
+    "timestamp",
+    "bitcoin",
+    "blockchain",
+    "git",
+]
+exclude = [
+    ".github",
+    ".gitignore",
+    "/target",
+]
+default-run = "ots"
+
+[lib]
+name = "ots_client"
+path = "src/lib.rs"
 
 [[bin]]
 name = "ots"
 path = "src/main.rs"
 
+[[bin]]
+name = "ots-git-gpg-wrapper"
+path = "src/bin/ots_git_gpg_wrapper.rs"
+
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "time"] }
-reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "json"] }
 futures = "0.3"
 rayon = "1"
 
-sha1 = "0.10"
-sha2 = "0.10"
-ripemd = "0.1"
+sha1 = "0.11"
+sha2 = "0.11"
+ripemd = "0.2"
 tiny-keccak = { version = "2", features = ["keccak"] }
-rand = "0.8"
+rand = "0.10"
 
 hex = "0.4"
+base64 = "0.23"
 anyhow = "1"
 thiserror = "2"
-dirs = "5"
-indicatif = "0.17"
+dirs = "7"
+indicatif = "0.18"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 glob = "0.3"
@@ -34,4 +71,66 @@ glob = "0.3"
 [profile.release]
 lto = true
 codegen-units = 1
+panic = "abort"
+opt-level = 3
 strip = true
+debug = false
+debug-assertions = false
+overflow-checks = false
+incremental = true
+
+[workspace.lints.rust]
+# ==============================================================================
+# LEVEL 1: CRITICAL ERRORS (Forbid)
+# ==============================================================================
+unreachable_code = "forbid"
+improper_ctypes_definitions = "forbid"
+future_incompatible = { level = "forbid", priority = -1 }
+nonstandard_style = { level = "forbid", priority = -1 }
+rust_2018_idioms = { level = "forbid", priority = -1 }
+missing_docs = "forbid"
+# ------------------------------------------------------------------------
+# LEVEL 2: STYLE WARNINGS (Warn)
+# ------------------------------------------------------------------------
+dead_code = "warn"
+warnings = { level = "warn", priority = -1 }
+unsafe_code = "warn"
+# ------------------------------------------------------------------------
+# LEVEL 3: ALLOW/IGNORABLE (Allow)
+# ------------------------------------------------------------------------
+unused_doc_comments = "allow"
+
+[workspace.lints.clippy]
+# ==============================================================================
+# LEVEL 1: CRITICAL ERRORS (Forbid)
+# ==============================================================================
+perf = "forbid"
+correctness = "forbid"
+suspicious = "forbid"
+unwrap_used = "forbid"
+expect_used = "forbid"
+indexing_slicing = "forbid"
+arithmetic_side_effects = "forbid"
+missing_safety_doc = "forbid"
+same_item_push = "forbid"
+implicit_clone = "forbid"
+all = { level = "forbid", priority = -1 }
+pedantic = { level = "forbid", priority = -1 }
+nursery = { level = "forbid", priority = -1 }
+single_call_fn = "forbid"
+# ------------------------------------------------------------------------
+# LEVEL 2: STYLE WARNINGS (Warn)
+# ------------------------------------------------------------------------
+dbg_macro = { level = "warn", priority = 1 }
+todo = { level = "warn", priority = 1 }
+unnecessary_safety_comment = { level = "warn", priority = 1 }
+# ------------------------------------------------------------------------
+# LEVEL 3: ALLOW/IGNORABLE (Allow)
+# ------------------------------------------------------------------------
+restriction = { level = "allow", priority = -1 }
+inline_always = { level = "allow", priority = 1 }
+cast_possible_truncation = { level = "allow", priority = 1 }
+cast_sign_loss = { level = "allow", priority = 1 }
+cast_possible_wrap = { level = "allow", priority = 1 }
+empty_line_after_doc_comments = { level = "allow", priority = 1 }
+

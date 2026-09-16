@@ -50,7 +50,9 @@ impl TimestampCache {
     }
 
     fn save(&self, timestamp: &Timestamp) -> std::io::Result<()> {
-        let Some(base) = &self.path else { return Ok(()) };
+        let Some(base) = &self.path else {
+            return Ok(());
+        };
         let Some(path) = self.commitment_to_path(base, &timestamp.msg) else {
             return Ok(());
         };

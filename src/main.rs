@@ -1,18 +1,7 @@
-mod bitcoin;
-mod cache;
-mod calendar;
-mod cli;
-mod commands;
-mod context;
-mod hashing;
-mod log;
-mod ots;
-mod upgrade;
-mod util;
-
 use clap::Parser;
-use cli::{Cli, Command};
-use context::Context;
+use ots_client::cli::{Cli, Command};
+use ots_client::commands;
+use ots_client::context::Context;
 
 #[tokio::main]
 async fn main() {
@@ -31,6 +20,8 @@ async fn main() {
         Command::Verify(args) => commands::verify::run(args, &ctx).await,
         Command::Info(args) => commands::info::run(args, &ctx).await,
         Command::Prune(args) => commands::prune::run(args, &ctx).await,
+        Command::Git(args) => commands::git::run(args, &ctx).await,
+        Command::GitExtract(args) => commands::git_extract::run(args, &ctx).await,
     };
 
     if let Err(e) = result {

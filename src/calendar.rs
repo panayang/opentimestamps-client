@@ -50,7 +50,13 @@ fn sanitize_response(bytes: &[u8]) -> String {
     bytes
         .iter()
         .take(160)
-        .map(|&b| if WHITELIST.contains(&b) { b as char } else { '_' })
+        .map(|&b| {
+            if WHITELIST.contains(&b) {
+                b as char
+            } else {
+                '_'
+            }
+        })
         .collect()
 }
 
@@ -177,7 +183,11 @@ fn glob_match_url(pattern: &str, url: &str) -> bool {
     // matching the Python implementation's use of fnmatch on netloc.
     match (split_url(pattern), split_url(url)) {
         (Some((ps, ph, pp)), Some((us, uh, up))) => {
-            ps == us && pp == up && glob::Pattern::new(ph).map(|g| g.matches(uh)).unwrap_or(false)
+            ps == us
+                && pp == up
+                && glob::Pattern::new(ph)
+                    .map(|g| g.matches(uh))
+                    .unwrap_or(false)
         }
         _ => false,
     }

@@ -88,6 +88,14 @@ pub enum Command {
     /// Prune a timestamp (discard data not needed for verification)
     #[command(alias = "p")]
     Prune(PruneArgs),
+
+    /// Git integration commands (stamp/verify commits and tags, extract files, GPG wrapper)
+    #[command(alias = "g")]
+    Git(GitArgs),
+
+    /// Extract timestamp for a single file from a timestamped git commit (compatibility alias)
+    #[command(name = "git-extract")]
+    GitExtract(GitExtractArgs),
 }
 
 #[derive(Args, Debug)]
@@ -139,12 +147,20 @@ pub struct VerifyArgs {
     /// Verify a hex-encoded digest instead of a file
     #[arg(short = 'd', value_name = "DIGEST", conflicts_with = "target")]
     pub digest: Option<String>,
+
+    /// Output verification result as machine-readable JSON
+    #[arg(long)]
+    pub json: bool,
 }
 
 #[derive(Args, Debug)]
 pub struct InfoArgs {
     /// Timestamp file (.ots)
     pub file: PathBuf,
+
+    /// Output timestamp details as machine-readable JSON
+    #[arg(long)]
+    pub json: bool,
 }
 
 #[derive(Args, Debug)]
@@ -163,4 +179,94 @@ pub struct PruneArgs {
     /// Discard attestations from a specified notary (repeatable: btc, ltc, unknown, pending:*, pending:URI). Default: pending:*.
     #[arg(long = "discard", value_name = "NOTARY")]
     pub attestations_to_discard: Vec<String>,
+}
+
+#[derive(Args, Debug)]
+pub struct GitArgs {
+    #[command(subcommand)]
+    pub command: GitCommand,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum GitCommand {
+    /// Timestamp a git commit or tag
+    #[command(alias = "s")]
+    Stamp(GitStampArgs),
+
+    /// Verify the OpenTimestamps proof of a git commit or tag
+    #[command(alias = "v")]
+    Verify(GitVerifyArgs),
+
+    /// Extract timestamp proof for a specific file in a commit
+    #[command(alias = "e")]
+    Extract(GitExtractArgs),
+
+    /// GPG wrapper program for git (can be configured in git config gpg.program)
+    GpgWrapper(GitGpgWrapperArgs),
+}
+
+#[derive(Args, Debug)]
+pub struct GitStampArgs {
+    /// Commit or tag reference to timestamp (default: HEAD)
+    #[arg(default_value = "HEAD")]
+    pub reference: String,
+
+    /// Remote calendar URL to use (repeatable)
+    #[arg(short = 'c', long = "calendar", value_name = "URL")]
+    pub calendars: Vec<String>,
+
+    /// Seconds to wait for each calendar to respond
+    #[arg(long, default_value_t = 5)]
+    pub timeout: u64,
+
+    /// Consider timestamp complete once at least M calendars reply
+    #[arg(short = 'm', default_value_t = 2)]
+    pub m: usize,
+
+    /// Output path for detached .ots file (default: .git/ots/<commit_hash>.ots or <commit_hash>.ots)
+    #[arg(short = 'o', long = "output")]
+    pub output: Option<PathBuf>,
+}
+
+#[derive(Args, Debug)]
+pub struct GitVerifyArgs {
+    /// Commit or tag reference to verify (default: HEAD)
+    #[arg(default_value = "HEAD")]
+    pub reference: String,
+
+    /// Explicit path to a detached .ots timestamp file
+    #[arg(short = 't', long = "timestamp")]
+    pub timestamp: Option<PathBuf>,
+
+    /// Output verification result as JSON
+    #[arg(long)]
+    pub json: bool,
+}
+
+#[derive(Args, Debug)]
+pub struct GitExtractArgs {
+    /// Path to file, from root of the git repo
+    pub path: String,
+
+    /// Filename to write timestamp to (default: PATH.ots)
+    pub timestamp_file: Option<PathBuf>,
+
+    /// Commit reference (default: HEAD)
+    #[arg(default_value = "HEAD")]
+    pub commit: String,
+}
+
+#[derive(Args, Debug)]
+pub struct GitGpgWrapperArgs {
+    /// Path to the real GnuPG binary (default: "gpg")
+    #[arg(short = 'g', long = "gpg-program", default_value = "gpg")]
+    pub gpg_program: String,
+
+    /// Remote calendar URLs to use (repeatable)
+    #[arg(short = 'c', long = "calendar")]
+    pub calendars: Vec<String>,
+
+    /// Arguments forwarded to GPG
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    pub gpg_args: Vec<String>,
 }

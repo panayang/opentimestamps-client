@@ -67,10 +67,7 @@ impl Op {
 
     #[allow(dead_code)]
     pub fn is_crypt_op(&self) -> bool {
-        matches!(
-            self,
-            Op::Sha1 | Op::Ripemd160 | Op::Sha256 | Op::Keccak256
-        )
+        matches!(self, Op::Sha1 | Op::Ripemd160 | Op::Sha256 | Op::Keccak256)
     }
 
     pub fn digest_length(&self) -> Option<usize> {

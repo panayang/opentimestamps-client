@@ -89,7 +89,10 @@ pub async fn run(args: PruneArgs, ctx: &Context) -> anyhow::Result<()> {
 
     let backup = backup_path(&args.file);
     if backup.exists() {
-        anyhow::bail!("could not back up timestamp: {} already exists", backup.display());
+        anyhow::bail!(
+            "could not back up timestamp: {} already exists",
+            backup.display()
+        );
     }
     std::fs::rename(&args.file, &backup)?;
 

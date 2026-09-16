@@ -179,10 +179,10 @@ impl Timestamp {
             for (op, stamp) in &self.ops {
                 out.push_str(&" ".repeat(indent));
                 out.push_str(&format!(" -> {op}"));
-                if verbosity > 0 {
-                    if let Ok(res) = op.apply(&self.msg) {
-                        out.push_str(&format!(" == {}", hex::encode(res)));
-                    }
+                if verbosity > 0
+                    && let Ok(res) = op.apply(&self.msg)
+                {
+                    out.push_str(&format!(" == {}", hex::encode(res)));
                 }
                 out.push('\n');
                 out.push_str(&stamp.str_tree(indent + 4, verbosity));
@@ -190,10 +190,10 @@ impl Timestamp {
         } else if let Some((op, stamp)) = self.ops.iter().next() {
             out.push_str(&" ".repeat(indent));
             out.push_str(&format!("{op}"));
-            if verbosity > 0 {
-                if let Ok(res) = op.apply(&self.msg) {
-                    out.push_str(&format!(" == {}", hex::encode(res)));
-                }
+            if verbosity > 0
+                && let Ok(res) = op.apply(&self.msg)
+            {
+                out.push_str(&format!(" == {}", hex::encode(res)));
             }
             out.push('\n');
             out.push_str(&stamp.str_tree(indent, verbosity));
